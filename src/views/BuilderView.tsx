@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useResumeStore } from '../store/useResumeStore';
 import RicebowlSyncModal from '../components/resume/RicebowlSyncModal';
 import { useAutoSave, loadResumeById } from '../hooks/useAutoSave';
+import ResumeChecklist from '../components/resume/ResumeChecklist';
 
 // A4 dimensions
 const A4_W_MM = 210;
@@ -270,6 +271,7 @@ const BuilderView: React.FC = () => {
           </div>
         </div>
         <div style={{ padding: '1.5rem', flex: 1 }}>
+          <ResumeChecklist />
           <BuilderEditor />
         </div>
       </div>
