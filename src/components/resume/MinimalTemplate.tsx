@@ -20,9 +20,9 @@ const MinimalTemplate: React.FC = () => {
           style={{ fontSize: '26pt', fontWeight: 700, margin: '0 0 2mm', letterSpacing: '-0.03em' }}
         />
         <div style={{ display: 'flex', gap: '6mm', fontSize: '9pt', color: '#555', flexWrap: 'wrap' }}>
-          <InlineEdit placeholder="Email" value={personalInfo.email} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val })} />
-          <InlineEdit placeholder="Phone" value={personalInfo.phone} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val })} />
-          <InlineEdit placeholder="Portfolio" value={personalInfo.portfolioLine} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val })} />
+          {personalInfo.email && <InlineEdit placeholder="Email" value={personalInfo.email} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val })} />}
+          {personalInfo.phone && <InlineEdit placeholder="Phone" value={personalInfo.phone} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val })} />}
+          {personalInfo.portfolioLine && <InlineEdit placeholder="Portfolio" value={personalInfo.portfolioLine} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val })} />}
         </div>
       </div>
 

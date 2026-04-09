@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, Plus, Trash2, FileText, Check } from 'lucide-react';
 import { useResumeStore } from '../store/useResumeStore';
+import BulletTextarea from '../components/forms/BulletTextarea';
+import { optimizeDescription } from '../utils/openrouter';
 
 import { MONTHS, YEARS, COMMON_SKILLS, COMMON_LANGUAGES, LANGUAGE_LEVELS } from '../utils/constants';
 
 const STEPS = ['Personal', 'Experience', 'Education', 'Skills'];
+
 
 // ── Shared date dropdowns ──────────────────────────────────────────
 const DateSelect = ({
@@ -121,6 +124,20 @@ const CreateResumeFlow: React.FC = () => {
   const navigate = useNavigate();
   const store = useResumeStore();
   const [step, setStep] = useState(1);
+  const [optimizingId, setOptimizingId] = useState<string | null>(null);
+
+  const handleOptimize = async (id: string, description: string, title: string, company: string) => {
+    if (!description || !title) return;
+    setOptimizingId(id);
+    try {
+      const improved = await optimizeDescription(description, title, company);
+      store.updateExperience(id, { description: improved });
+    } catch {
+      alert('Failed to optimize. Please check your API key.');
+    } finally {
+      setOptimizingId(null);
+    }
+  };
 
   const totalSteps = STEPS.length;
   const progress = (step / totalSteps) * 100;
@@ -291,13 +308,14 @@ const CreateResumeFlow: React.FC = () => {
                     {/* Description */}
                     <div>
                       <label className="form-label">Job Description</label>
-                      <textarea
-                        className="form-input"
-                        rows={4}
-                        placeholder="Describe what you did, achievements, impact…"
+                      <BulletTextarea
                         value={exp.description}
-                        onChange={e => store.updateExperience(exp.id, { description: e.target.value })}
-                        style={{ resize: 'vertical' }}
+                        onChange={val => store.updateExperience(exp.id, { description: val })}
+                        rows={5}
+                        placeholder="Describe what you did, achievements, impact…"
+                        onOptimize={() => handleOptimize(exp.id, exp.description, exp.title, exp.company)}
+                        isOptimizing={optimizingId === exp.id}
+                        canOptimize={!!exp.description && !!exp.title}
                       />
                     </div>
                   </div>

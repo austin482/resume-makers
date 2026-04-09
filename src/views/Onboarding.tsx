@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Edit3, Eye, Target, Layout, ChevronRight, Zap } from 'lucide-react';
+import { FileText, Edit3, Eye, Layout, ChevronRight, Zap } from 'lucide-react';
 import { useResumeStore } from '../store/useResumeStore';
 
 const Onboarding: React.FC = () => {
@@ -17,8 +17,7 @@ const Onboarding: React.FC = () => {
 
   const features = [
     { icon: <Eye size={28} />, title: 'Real-Time Preview', desc: 'See your resume update live as you type — no guesswork.' },
-    { icon: <Zap size={28} />, title: 'AI Optimization', desc: 'Let AI polish your job descriptions with a single click.' },
-    { icon: <Target size={28} />, title: 'Job Targeting', desc: 'Paste a job description and tailor your resume to it.' },
+    { icon: <Zap size={28} />, title: 'AI Optimization', desc: 'AI-polished descriptions in a single click.' },
     { icon: <Layout size={28} />, title: 'Premium Templates', desc: 'Switch between stunning layouts instantly.' },
   ];
 
@@ -80,15 +79,15 @@ const Onboarding: React.FC = () => {
 
         {/* Feature Grid */}
         <section className="w-full" style={{ background: 'white', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', padding: '4rem 1.5rem' }}>
-          <div className="container">
-            <h2 className="text-center" style={{ fontSize: '1.875rem', marginBottom: '0.75rem' }}>Everything you need</h2>
-            <p className="text-center" style={{ color: 'var(--text-secondary)', marginBottom: '3rem' }}>All the tools to craft a standout resume, in one place.</p>
+          <div className="container" style={{ textAlign: 'center', margin: '0 auto' }}>
+            <h2 style={{ fontSize: '1.875rem', marginBottom: '0.75rem', textAlign: 'center' }}>Everything you need</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '3rem', textAlign: 'center' }}>All the tools to craft a standout resume, in one place.</p>
             <div className="flex gap-6 justify-center" style={{ flexWrap: 'wrap' }}>
               {features.map((f, i) => (
                 <div
                   key={i}
                   className="premium-card card-hover flex flex-col items-center text-center p-6 gap-4"
-                  style={{ flex: '1 1 200px', maxWidth: '260px' }}
+                  style={{ flex: '1 1 220px', maxWidth: '300px' }}
                 >
                   <div style={{ width: '56px', height: '56px', borderRadius: 'var(--radius-lg)', background: 'var(--primary-50)', color: 'var(--primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {f.icon}
@@ -106,8 +105,8 @@ const Onboarding: React.FC = () => {
         {/* Choice Section */}
         <section id="start-building" className="w-full flex flex-col items-center" style={{ padding: '5rem 1.5rem', minHeight: '60vh', justifyContent: 'center' }}>
           <div className="text-center" style={{ marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>How would you like to start?</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Pick the path that works best for you.</p>
+            <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem', textAlign: 'center' }}>How would you like to start?</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', textAlign: 'center' }}>Pick the path that works best for you.</p>
           </div>
 
           <div className="flex gap-6 justify-center" style={{ maxWidth: '780px', width: '100%', flexWrap: 'wrap' }}>
@@ -120,11 +119,11 @@ const Onboarding: React.FC = () => {
               <div style={{ width: '60px', height: '60px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, var(--primary-100), var(--primary-50))', color: 'var(--primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                 <FileText size={28} />
               </div>
-              <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 700 }}>I have a resume</h3>
+              <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 700 }}>Upload Existing Resume</h3>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 1.25rem', fontSize: '0.9375rem', maxWidth: '260px' }}>
-                Upload your existing resume and optionally provide a target job to tailor it.
+                Import your current resume to update it or tailor it to a specific job description.
               </p>
-              <span className="chip chip-primary" style={{ marginTop: 'auto' }}>Quick · Upload & Go</span>
+              <span className="chip chip-primary" style={{ marginTop: 'auto' }}>Quick · Auto-fill</span>
             </button>
 
             {/* Card: Start fresh */}
@@ -136,11 +135,11 @@ const Onboarding: React.FC = () => {
               <div style={{ width: '60px', height: '60px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, #ede9fe, #f5f3ff)', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                 <Edit3 size={28} />
               </div>
-              <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 700 }}>Start from scratch</h3>
+              <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 700 }}>Create New Resume</h3>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 1.25rem', fontSize: '0.9375rem', maxWidth: '260px' }}>
-                We'll walk you through a guided 4-step form to build your complete resume.
+                Follow our simple, guided process to build a professional resume from start to finish.
               </p>
-              <span className="chip chip-neutral" style={{ marginTop: 'auto' }}>4 Steps · AI-assisted</span>
+              <span className="chip chip-primary" style={{ marginTop: 'auto' }}>Easy · AI-Assisted</span>
             </button>
           </div>
         </section>

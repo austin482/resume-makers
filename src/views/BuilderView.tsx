@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import BuilderEditor from '../components/forms/BuilderEditor';
 import ResumePreview from '../components/resume/ResumePreview';
-import { ArrowLeft, Download, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Loader2, Check, CloudOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeStore } from '../store/useResumeStore';
 import RicebowlSyncModal from '../components/resume/RicebowlSyncModal';
+import { useAutoSave, loadResumeById } from '../hooks/useAutoSave';
 
 // A4 dimensions
 const A4_W_MM = 210;
@@ -118,6 +119,25 @@ const BuilderView: React.FC = () => {
   const [pageBreaks, setPageBreaks] = useState<number[]>([]);
   const [exporting, setExporting] = useState(false);
   const [showRicebowlModal, setShowRicebowlModal] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle'|'saving'|'saved'|'error'>('idle');
+
+  // ── Auto-save every 30s ──────────────────────────────────────────────
+  const { saveNow } = useAutoSave(setSaveStatus, 30_000);
+
+  // ── Load resume from URL ?id= on first mount ─────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) return;
+    loadResumeById(id).then(data => {
+      if (!data) return;
+      const store = useResumeStore.getState();
+      if (data.personalInfo) store.setPersonalInfo(data.personalInfo as Parameters<typeof store.setPersonalInfo>[0]);
+      if (data.experiences) (data.experiences as Parameters<typeof store.addExperience>[0][]).forEach(e => store.updateExperience(e.id, e));
+      if (data.template) store.setTemplate(data.template as Parameters<typeof store.setTemplate>[0]);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const pageCount = pageBreaks.length + 1;
 
@@ -226,10 +246,28 @@ const BuilderView: React.FC = () => {
               <FileText size={18} /> Resume Makers
             </div>
           </div>
-          <button onClick={handleExportPDF} disabled={exporting} className="btn btn-primary"
-            style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem', gap: '0.5rem', opacity: exporting ? 0.7 : 1 }}>
-            {exporting ? <><Loader2 size={14} className="animate-spin" /> Exporting…</> : <><Download size={15} /> Export PDF</>}
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Save status indicator */}
+            {saveStatus === 'saving' && (
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Loader2 size={12} className="animate-spin" /> Saving…
+              </span>
+            )}
+            {saveStatus === 'saved' && (
+              <span style={{ fontSize: '0.75rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Check size={12} /> Saved
+              </span>
+            )}
+            {saveStatus === 'error' && (
+              <span style={{ fontSize: '0.75rem', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <CloudOff size={12} /> Save failed
+              </span>
+            )}
+            <button onClick={() => { saveNow(); handleExportPDF(); }} disabled={exporting} className="btn btn-primary"
+              style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem', gap: '0.5rem', opacity: exporting ? 0.7 : 1 }}>
+              {exporting ? <><Loader2 size={14} className="animate-spin" /> Exporting…</> : <><Download size={15} /> Export PDF</>}
+            </button>
+          </div>
         </div>
         <div style={{ padding: '1.5rem', flex: 1 }}>
           <BuilderEditor />

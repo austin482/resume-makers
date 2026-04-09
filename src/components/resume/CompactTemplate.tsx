@@ -29,9 +29,9 @@ const CompactTemplate: React.FC = () => {
           </div>
         </div>
         <div style={{ textAlign: 'right', fontSize: '8.5pt', color: '#555', lineHeight: 1.7 }}>
-          <InlineEdit tagName="div" placeholder="Email" value={personalInfo.email} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val })} />
-          <InlineEdit tagName="div" placeholder="Phone" value={personalInfo.phone} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val })} />
-          <InlineEdit tagName="div" placeholder="Portfolio" value={personalInfo.portfolioLine} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val })} />
+          {personalInfo.email && <InlineEdit tagName="div" placeholder="Email" value={personalInfo.email} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val })} />}
+          {personalInfo.phone && <InlineEdit tagName="div" placeholder="Phone" value={personalInfo.phone} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val })} />}
+          {personalInfo.portfolioLine && <InlineEdit tagName="div" placeholder="Portfolio" value={personalInfo.portfolioLine} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val })} />}
         </div>
       </div>
 

@@ -26,9 +26,9 @@ const ModernTemplate: React.FC = () => {
           style={{ fontSize: '22pt', fontWeight: 700, margin: '0 0 2mm', letterSpacing: '-0.02em' }}
         />
         <div style={{ display: 'flex', gap: '5mm', fontSize: '8.5pt', color: 'rgba(255,255,255,0.85)', flexWrap: 'wrap' }}>
-          <InlineEdit placeholder="Email" value={personalInfo.email ? `✉ ${personalInfo.email}` : ''} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val.replace(/^✉\s*/, '') })} />
-          <InlineEdit placeholder="Phone" value={personalInfo.phone ? `· ${personalInfo.phone}` : ''} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val.replace(/^·\s*/, '') })} />
-          <InlineEdit placeholder="Portfolio" value={personalInfo.portfolioLine ? `· ${personalInfo.portfolioLine}` : ''} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val.replace(/^·\s*/, '') })} />
+          {personalInfo.email && <InlineEdit placeholder="Email" value={`✉ ${personalInfo.email}`} onChange={(val) => useResumeStore.getState().setPersonalInfo({ email: val.replace(/^✉\s*/, '') })} />}
+          {personalInfo.phone && <InlineEdit placeholder="Phone" value={`${personalInfo.email ? '· ' : ''}${personalInfo.phone}`} onChange={(val) => useResumeStore.getState().setPersonalInfo({ phone: val.replace(/^·\s*/, '') })} />}
+          {personalInfo.portfolioLine && <InlineEdit placeholder="Portfolio" value={`${(personalInfo.email || personalInfo.phone) ? '· ' : ''}${personalInfo.portfolioLine}`} onChange={(val) => useResumeStore.getState().setPersonalInfo({ portfolioLine: val.replace(/^·\s*/, '') })} />}
         </div>
       </div>
 

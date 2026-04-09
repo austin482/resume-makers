@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
-import { Plus, Trash2, ChevronDown, ChevronUp, Camera, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Camera } from 'lucide-react';
 import { MONTHS, YEARS, COMMON_SKILLS, COMMON_LANGUAGES, LANGUAGE_LEVELS } from '../../utils/constants';
 import { optimizeDescription } from '../../utils/openrouter';
+import BulletTextarea from './BulletTextarea';
 
 // ── Date dropdowns ────────────────────────────────────────────────
 const DateSelect = ({ month, year, onMonthChange, onYearChange }: {
@@ -348,32 +349,14 @@ const BuilderEditor: React.FC = () => {
                 </label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   <label className="form-label" style={{ fontSize: '0.75rem', margin: 0 }}>Description</label>
-                  <textarea className="form-input" rows={4} placeholder="Achievements, impact…" value={exp.description}
-                    onChange={e => store.updateExperience(exp.id, { description: e.target.value })} style={{ resize: 'vertical' }} />
-                  <button 
-                    type="button" 
-                    onClick={() => handleOptimize(exp.id, exp.description, exp.title, exp.company)}
-                    disabled={optimizingId === exp.id || !exp.description || !exp.title}
-                    className="btn"
-                    style={{ 
-                      alignSelf: 'flex-start', 
-                      padding: '0.4rem 0.75rem', 
-                      fontSize: '0.75rem', 
-                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))', 
-                      color: 'var(--primary-700)', 
-                      border: '1px solid rgba(99, 102, 241, 0.25)',
-                      display: 'flex',
-                      gap: '0.35rem',
-                      alignItems: 'center',
-                      borderRadius: 'var(--radius-sm)',
-                      fontWeight: 600,
-                      cursor: optimizingId === exp.id || !exp.description || !exp.title ? 'not-allowed' : 'pointer',
-                      opacity: optimizingId === exp.id || !exp.description || !exp.title ? 0.6 : 1,
-                      transition: 'all var(--transition-fast)'
-                    }}
-                  >
-                    {optimizingId === exp.id ? <><Loader2 size={13} className="animate-spin" /> Optimizing...</> : <><Sparkles size={13} color="#8b5cf6" /> Optimize with AI</>}
-                  </button>
+                  <BulletTextarea
+                    value={exp.description}
+                    onChange={val => store.updateExperience(exp.id, { description: val })}
+                    rows={5}
+                    onOptimize={() => handleOptimize(exp.id, exp.description, exp.title, exp.company)}
+                    isOptimizing={optimizingId === exp.id}
+                    canOptimize={!!exp.description && !!exp.title}
+                  />
                 </div>
               </div>
             </div>
