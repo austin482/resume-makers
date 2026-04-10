@@ -1,6 +1,7 @@
 /**
  * Extracts raw text from PDF or DOCX files in the browser.
  */
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 export async function extractTextFromFile(file: File): Promise<string> {
   const ext = file.name.toLowerCase().split('.').pop();
@@ -11,8 +12,8 @@ export async function extractTextFromFile(file: File): Promise<string> {
 
 async function extractFromPdf(file: File): Promise<string> {
   const pdfjsLib = await import('pdfjs-dist');
-  // Use CDN worker URL for reliable production builds
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+  // Use Vite-bundled worker URL (served from same origin, no MIME issues)
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
