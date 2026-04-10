@@ -1,27 +1,9 @@
-import https from 'https';
 import crypto from 'crypto';
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
 
 const APP_ID = process.env.LARK_APP_ID;
 const APP_SECRET = process.env.LARK_APP_SECRET;
 const APP_TOKEN = 'OfV2bEVkWaq3PVs9ppslgMiVglc';
 const TABLE_ID = 'tblQDw5pIpOxJIof';
-
-function request(url, options, bodyData) {
-  return new Promise((resolve, reject) => {
-    const req = https.request(url, options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(JSON.parse(data)));
-    });
-    req.on('error', reject);
-    if (bodyData) {
-      req.write(bodyData);
-    }
-    req.end();
-  });
-}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -32,39 +14,32 @@ export default async function handler(req, res) {
     const { name, email, phone, shareWithRicebowl, recommendationEmail, pdfBase64, pdfName } = req.body;
 
     // 1. Get Tenant Access Token
-    const authRes = await request('https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal', {
+    const authReq = await fetch('https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    }, JSON.stringify({ app_id: APP_ID, app_secret: APP_SECRET }));
-    
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ app_id: APP_ID, app_secret: APP_SECRET })
+    });
+    const authRes = await authReq.json();
     const token = authRes.tenant_access_token;
     if (!token) throw new Error('Failed to authenticate with Lark');
 
-    // 2. Upload PDF to Lark (Multipart)
-    const boundary = '----WebKitFormBoundary' + crypto.randomBytes(16).toString('hex');
+    // 2. Upload PDF to Lark using FormData
     const pdfBuffer = Buffer.from(pdfBase64.split(',').pop(), 'base64');
+    const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
     
-    let parts = [];
-    parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="file_name"\r\n\r\n${pdfName}\r\n`);
-    parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="parent_type"\r\n\r\nbitable_file\r\n`);
-    parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="parent_node"\r\n\r\n${APP_TOKEN}\r\n`);
-    parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="size"\r\n\r\n${pdfBuffer.length}\r\n`);
-    parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${pdfName}"\r\nContent-Type: application/pdf\r\n\r\n`);
+    const formData = new FormData();
+    formData.append('file_name', pdfName || 'Resume.pdf');
+    formData.append('parent_type', 'explorer');
+    formData.append('parent_node', '');
+    formData.append('size', pdfBuffer.length.toString());
+    formData.append('file', blob, pdfName || 'Resume.pdf');
 
-    const part1 = Buffer.from(parts.join(''));
-    const part2 = pdfBuffer;
-    const part3 = Buffer.from(`\r\n--${boundary}--\r\n`);
-    const uploadBuffer = Buffer.concat([part1, part2, part3]);
-
-    const uploadRes = await request('https://open.larksuite.com/open-apis/drive/v1/medias/upload_all', {
+    const uploadReq = await fetch('https://open.larksuite.com/open-apis/drive/v1/medias/upload_all', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'Content-Length': uploadBuffer.length
-      }
-    }, uploadBuffer);
-
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const uploadRes = await uploadReq.json();
     const fileToken = uploadRes.data?.file_token;
     if (!fileToken) throw new Error('Failed to upload file to Lark: ' + JSON.stringify(uploadRes));
 
@@ -80,27 +55,19 @@ export default async function handler(req, res) {
       }
     });
 
-    const createRes = await request(`https://open.larksuite.com/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`, {
+    const createReq = await fetch(`https://open.larksuite.com/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
-    }, recordPayload);
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: recordPayload
+    });
+    const createRes = await createReq.json();
 
     if (createRes.code !== 0) throw new Error('Failed to insert record: ' + JSON.stringify(createRes));
 
-    // For Vite fallback response (if express/vercel res helpers aren't available)
-    if (typeof res.json === 'function') {
-      res.status(200).json({ success: true, record_id: createRes.data.record.id });
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true }));
-    }
+    return res.status(200).json({ success: true, record_id: createRes.data.record.id });
   } catch (error) {
     console.error('Lark Sync Error:', error.message);
-    if (typeof res.status === 'function') {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: error.message }));
-    }
+    return res.status(500).json({ error: error.message });
   }
+}
 }
