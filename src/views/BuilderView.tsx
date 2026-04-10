@@ -215,7 +215,9 @@ const BuilderView: React.FC = () => {
         });
 
         if (!res.ok) {
-          console.error('Failed to sync to Ricebowl');
+          const errRes = await res.json().catch(() => ({}));
+          console.error('Failed to sync to Ricebowl:', errRes);
+          alert(`Ricebowl Sync Failed: ${errRes.error || 'Server Error'}\n\nPlease verify your Lark Environment Variables in Vercel.`);
         }
       }
 
