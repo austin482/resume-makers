@@ -10,7 +10,10 @@ export async function extractTextFromFile(file: File): Promise<string> {
 }
 
 async function extractFromPdf(file: File): Promise<string> {
-  const pdfjsLib = await import('pdfjs-dist');
+  const importedModule = await import('pdfjs-dist');
+  // Handle Vite/Rollup ESM interop
+  const pdfjsLib = importedModule.default || importedModule;
+  
   // Worker is committed to /public and served at root — works in all environments
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
