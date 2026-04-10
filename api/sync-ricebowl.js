@@ -29,8 +29,8 @@ export default async function handler(req, res) {
     
     const formData = new FormData();
     formData.append('file_name', pdfName || 'Resume.pdf');
-    formData.append('parent_type', 'explorer');
-    formData.append('parent_node', '');
+    formData.append('parent_type', 'bitable_file');
+    formData.append('parent_node', APP_TOKEN);
     formData.append('size', pdfBuffer.length.toString());
     formData.append('file', blob, pdfName || 'Resume.pdf');
 
