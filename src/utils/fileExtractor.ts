@@ -11,9 +11,8 @@ export async function extractTextFromFile(file: File): Promise<string> {
 
 async function extractFromPdf(file: File): Promise<string> {
   const pdfjsLib = await import('pdfjs-dist');
-  // Use the local worker bundled with pdfjs-dist via Vite's ?url import
-  const workerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).href;
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+  // Use CDN worker URL for reliable production builds
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
