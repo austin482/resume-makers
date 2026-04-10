@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { supabase } from '../utils/supabase';
+import { supabase, isSupabaseConfigured } from '../utils/supabase';
 import { useResumeStore } from '../store/useResumeStore';
 
 // ── Session ID (anonymous, stored in localStorage) ────────────────────────────
@@ -16,6 +16,7 @@ export function getSessionId(): string {
 
 // ── Save resume to Supabase ───────────────────────────────────────────────────
 export async function saveResume(data: object): Promise<string | null> {
+  if (!isSupabaseConfigured || !supabase) return null;
   const sessionId = getSessionId();
   const { data: existing } = await supabase
     .from('resumes')
@@ -45,6 +46,7 @@ export async function saveResume(data: object): Promise<string | null> {
 
 // ── Load resume from Supabase by resume ID ────────────────────────────────────
 export async function loadResumeById(id: string) {
+  if (!isSupabaseConfigured || !supabase) return null;
   const { data, error } = await supabase
     .from('resumes')
     .select('data')
