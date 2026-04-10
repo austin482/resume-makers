@@ -147,7 +147,12 @@ const BuilderView: React.FC = () => {
     const el = fullRef.current;
     if (!el) return;
     const breaks = computeSmartBreaks(el);
-    setPageBreaks(breaks);
+    setPageBreaks(prev => {
+      if (prev.length !== breaks.length || prev.some((b, i) => b !== breaks[i])) {
+        return breaks;
+      }
+      return prev;
+    });
   }, []);
 
   useEffect(() => {

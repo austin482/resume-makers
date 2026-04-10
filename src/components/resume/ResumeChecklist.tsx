@@ -20,13 +20,11 @@ const STATUS_CONFIG: Record<Status, { icon: React.ReactNode; color: string; bg: 
 export const ResumeChecklist: React.FC = () => {
   const [open, setOpen] = useState(true);
 
-  const { personalInfo, experiences, educations, skills, languages } = useResumeStore(s => ({
-    personalInfo: s.personalInfo,
-    experiences: s.experiences,
-    educations: s.educations,
-    skills: s.skills,
-    languages: s.languages,
-  }));
+  const personalInfo = useResumeStore(s => s.personalInfo);
+  const experiences = useResumeStore(s => s.experiences);
+  const educations = useResumeStore(s => s.educations);
+  const skills = useResumeStore(s => s.skills);
+  const languages = useResumeStore(s => s.languages);
 
   // ── Build checklist items ────────────────────────────────────────
   const items: CheckItem[] = [];
