@@ -99,11 +99,11 @@ async function exportToPDF(
     const ctx = slice.getContext('2d')!;
     ctx.drawImage(canvas, 0, startCanvas, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
 
-    const imgData = slice.toDataURL('image/png');
+    const imgData = slice.toDataURL('image/jpeg', 0.85);
     // Height in mm: (sliceH / scale) / (canvas.width / scale) * A4_W_MM
     const sliceHmm = (sliceH / 2) / (canvas.width / 2) * A4_W_MM;
 
-    pdf.addImage(imgData, 'PNG', 0, 0, A4_W_MM, sliceHmm);
+    pdf.addImage(imgData, 'JPEG', 0, 0, A4_W_MM, sliceHmm);
   }
 
   return pdf;
